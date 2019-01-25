@@ -102,7 +102,7 @@ print('StDs : ', "\n", solver.get_std())
 print('Ranges : ', "\n", solver.get_ptp()) 
 if true_weights is not None:
     print('Erreurs : ', "\n", true_weights-predicted_thetas)
-    global_error = np.sum(true_weights-predicted_thetas)+np.sum(true_biases-predicted_bias)
+    global_error = np.sum(true_weights-predicted_thetas)  # +np.sum(true_biases-predicted_bias)
     print('Erreur globale : ', "\n", global_error)
     print('Erreur moyenne : ', "\n", global_error/(len(X)))
     print('Erreur relative : ', "\n", global_error/(len(X)*(range_x**2)*(n_dimensions**2)))

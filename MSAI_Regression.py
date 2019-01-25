@@ -38,6 +38,7 @@ class MSAI_Model(ABC):
         self.range_x = range_x
         self.n_samples = n_samples
         self.regularization = regularization
+        self.regul_ratio = 1e-3
         self.progression = None
         self.minima = None
         self.maxima = None
@@ -232,13 +233,13 @@ class LinearRegression(MSAI_Model):
         """
         if theta.shape[0] == X.shape[1]+1:
             X = np.column_stack((np.ones(self.n_samples), X))
-        result = []
         diff = model(theta, X)-Y
-        diff_reshaped = diff.reshape(1, X.shape[0])
-        for i, t in enumerate(theta):
-            #deriv = (1/self.n_samples) * np.matmul((model(theta, X)-Y).reshape(1,X.shape[0]),X[:,i])
-            result.append(np.matmul(diff_reshaped, X[:, i]) / self.n_samples)
-        return np.array(result).reshape(len(result), 1)
+        if self.regularization == 'l1':
+            diff += self.regul_ratio * np.sum(np.matmul(theta, theta.T))
+        elif self.regularization == 'l2':
+            diff += self.regul_ratio * np.sum(np.abs(theta))
+        print('theta', theta.shape, theta)
+        return np.matmul(X.T, diff) / self.n_samples
 
     def gradient_descent(self, initial_model, X, Y, max_iterations, alpha,
                          starting_thetas=None, max_time=0, tic_time=None):
@@ -439,13 +440,12 @@ class LogisticRegression(MSAI_Model):
         """
         if theta.shape[0] == X.shape[1]+1:
             X = np.column_stack((np.ones(self.n_samples), X))
-        result = []
         diff = model(theta, X)-Y
-        diff_reshaped = diff.reshape(1, X.shape[0])
-        for i, t in enumerate(theta):
-            #deriv = (1/self.n_samples) * np.matmul((model(theta, X)-Y).reshape(1,X.shape[0]),X[:,i])
-            result.append(np.matmul(diff_reshaped, X[:, i]) / self.n_samples)
-        return np.array(result).reshape(len(result), 1)
+        if self.regularization == 'l1':
+            diff += self.regul_ratio * np.sum(np.matmul(theta, theta.T))
+        elif self.regularization == 'l2':
+            diff += self.regul_ratio * np.sum(np.abs(theta))
+        return np.matmul(X.T, diff) / self.n_samples
 
     def randomize_model(self, theta, bias, X, range_x, random_ratio=0.0,
                         offsets=None):

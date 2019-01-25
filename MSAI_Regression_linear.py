@@ -25,6 +25,8 @@ plt.close('all')
 # = on démarre le chronomètre
 tic_time = datetime.now()
 
+np.random.seed(42)
+
 #variables de base
 n_dimensions = 1
 n_samples = 38
@@ -34,11 +36,10 @@ learning_rate = 0.1
 randomize = 0.5
 max_execution_time = 111
 true_weights = None
-
 #déclaration du solveur
 solver = MSAI_Regression(max_iterations, learning_rate, randomize,
                          max_execution_time, tic_time)
-
+solver.regularization = 'l1'
 #solver.set_selective_regression()
 
 #initialisation aléatoire du set d'entrainement
@@ -102,7 +103,7 @@ print('StDs : ', "\n", solver.get_std())
 print('Ranges : ', "\n", solver.get_ptp()) 
 if true_weights is not None:
     print('Erreurs : ', "\n", true_weights-predicted_thetas)
-    global_error = np.sum(true_weights-predicted_thetas)+np.sum(true_biases-predicted_bias)
+    global_error = np.sum(true_weights-predicted_thetas)  # +np.sum(true_biases-predicted_bias)
     print('Erreur globale : ', "\n", global_error)
     print('Erreur moyenne : ', "\n", global_error/(len(X)))
     print('Erreur relative : ', "\n", global_error/(len(X)*(range_x**2)*(n_dimensions**2)))
